@@ -1,0 +1,21 @@
+# Azure DevOps YAML Pipeline from Bow Data Toolkits
+
+trigger:
+    branches:
+        include:
+            - "*"
+
+
+resources:
+    repositories:
+        - repository: bowdata-toolkits
+          type: git
+          name: toolkits/bowdata.toolkits.azure-pipelines
+          ref: refs/heads/master
+
+
+parameters:
+  - name: workingDirectory
+    default: $(Build.SourcesDirectory)
+  - name: preRelease
+    default: "a"
