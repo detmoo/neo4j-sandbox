@@ -28,16 +28,12 @@ resource "azurerm_container_group" "container" {
     cpu    = var.cpu_cores
     memory = var.memory_in_gb
 
-    ports [
-        dynamic "port" {
-            for_each = var.tcp_ports
-            content {
-                port = port.value
-                protocol = "TCP"
-                }
+    dynamic "ports" {
+        for_each = var.tcp_ports
+        content {
+            port = ports.value
+            protocol = "TCP"
             }
-    ]
-
-
+        }
     }
 }
