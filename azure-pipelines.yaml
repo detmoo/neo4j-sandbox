@@ -49,11 +49,10 @@ stages:
         dependsOn: []
         variables: {}
         steps:
-          - task: TerraformTaskV4@4
+          - task: TerraformTaskV4@0
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: 'latest'
-              backendServiceArm: "terraform-agent"
 
           - checkout: self
             displayName: 'Checkout repository'
