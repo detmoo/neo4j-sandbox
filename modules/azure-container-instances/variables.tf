@@ -28,10 +28,10 @@ variable "image" {
   default     = "mcr.microsoft.com/azuredocs/aci-helloworld"
 }
 
-variable "port" {
-  type        = number
-  description = "Port to open on the container and the public IP address."
-  default     = 80
+variable "tcp_ports" {
+  type        = list(number)
+  description = "list of TCP ports to open on the container and the public IP address."
+  default     = [80]
 }
 
 variable "cpu_cores" {
