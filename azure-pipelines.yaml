@@ -10,7 +10,7 @@ resources:
     repositories:
         - repository: bowdata-toolkits
           type: git
-          name: toolkits/bowdata.toolkits.azure-pipelines
+          name: toolkits/bowdata.toolkits.modules-pipelines
           ref: refs/heads/master
 
 
@@ -19,3 +19,79 @@ parameters:
     default: $(Build.SourcesDirectory)
   - name: preRelease
     default: "a"
+  - name: azdoAgentPool
+    type: object
+    default:
+      vmImage: "ubuntu-latest"
+  - name: azureTestStageName
+    default: AzureTestStage
+  - name: azureTestStageDisplayName
+    default: 'Azure Test Stage'
+  - name: azureTestStageDependsOn
+    default: ''
+  - name: azureTestStageCondition
+    default: succeeded()
+  - name: azureTestStageVariables
+    type: object
+    default: {}
+
+
+stages:
+  - stage: ${{parameters.azureTestStageName}}
+    displayName: ${{parameters.azureTestStageDisplayName}}
+    dependsOn: ${{parameters.azureTestStageDependsOn}}
+    condition: ${{parameters.azureTestStageCondition}}
+    variables:
+      ARM_SUBSCRIPTION_ID: "9e5bf0fa-86d6-48ac-97c8-345ce88e547b"  # subscription
+      ARM_TENANT_ID: "da115dc3-b744-40e7-8217-325e653802c6"  # spa tenant
+      ARM_CLIENT_ID: "9e5bf0fa-86d6-48ac-97c8-345ce88e547b"  # spa app ID
+      ARM_CLIENT_SECRET: "QhiKty_tXBxk0AVe5TvrIk2BUL39dksINf"  # spa passwd
+      ${{ each pair in parameters.azureTestStageVariables }}:
+        ${{pair.key}}: ${{pair.value}}
+    jobs:
+      - job: AzureContainerInstancesTestJob
+        pool: ${{parameters.azdoAgentPool}}
+        condition: succeeded()
+        displayName: "ACI Test Job"
+        dependsOn: []
+        variables: {}
+        steps:
+          - task: TerraformTaskV4@4
+            displayName: 'Install Terraform'
+            inputs:
+              terraformVersion: 'latest'
+
+          - checkout: self
+            displayName: 'Checkout repository'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Init'
+            inputs:
+              command: 'init'
+              provider: 'azurerm'
+              workingDirectory: '${{parameters.workingDirectory}}'
+              backendType: 'local'
+              ensureBackend: true
+              backendServiceArm: "terraform-agent"
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Validate'
+            inputs:
+              command: 'validate'
+              workingDirectory: '${{parameters.workingDirectory}}'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Plan'
+            inputs:
+              command: 'plan'
+              workingDirectory: '$(Build.SourcesDirectory)/azure-container-instances'
+              environmentServiceNameAzureRM: "terraform-agent"
+              commandOptions: '-out=..$(Build.SourcesDirectory)/tfplan'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Apply'
+            inputs:
+              command: 'apply'
+              workingDirectory: '$(Build.SourcesDirectory)'
+              environmentServiceNameAzureRM: "terraform-agent"
+              commandOptions: '-auto-approve -input=false tfplan'
