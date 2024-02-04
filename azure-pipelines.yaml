@@ -20,7 +20,8 @@ parameters:
   - name: azureTestStageDisplayName
     default: 'Azure Test Stage'
   - name: azureTestStageDependsOn
-    default: ''
+    type: object
+    default: []
   - name: azureTestStageCondition
     default: succeeded()
   - name: azureTestStageVariables
