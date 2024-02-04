@@ -53,6 +53,7 @@ stages:
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: 'latest'
+              backendServiceArm: "terraform-agent"
 
           - checkout: self
             displayName: 'Checkout repository'
