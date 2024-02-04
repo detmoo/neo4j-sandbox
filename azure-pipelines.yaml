@@ -92,4 +92,4 @@ stages:
               command: 'apply'
               workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-auto-approve -input=false .tfplan'
+              commandOptions: '-auto-approve -input=false .tfplan -var="[7474, 7687]"'
