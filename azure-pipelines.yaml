@@ -64,7 +64,7 @@ stages:
               provider: 'azurerm'
               workingDirectory: '${{parameters.workingDirectory}}'
               backendType: 'local'
-              ensureBackend: true
+              ensureBackend: false
               backendServiceArm: "terraform-agent"
 
           - task: TerraformTaskV4@4
