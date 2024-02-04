@@ -78,6 +78,7 @@ stages:
           - task: TerraformTaskV4@4
             displayName: 'Terraform Plan'
             inputs:
+              provider: 'azurerm'
               command: 'plan'
               workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
@@ -86,6 +87,7 @@ stages:
           - task: TerraformTaskV4@4
             displayName: 'Terraform Apply'
             inputs:
+              provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(Build.SourcesDirectory)'
               environmentServiceNameAzureRM: "terraform-agent"
