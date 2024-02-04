@@ -4,4 +4,5 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'destroy'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
       environmentServiceNameAzureRM: "terraform-agent"
