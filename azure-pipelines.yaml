@@ -83,13 +83,13 @@ stages:
               command: 'plan'
               workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-out=$(Build.SourcesDirectory)/tfplan'
+              commandOptions: '-out=.tfplan'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Apply'
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              workingDirectory: '$(Build.SourcesDirectory)'
+              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-auto-approve -input=false tfplan'
+              commandOptions: '-auto-approve -input=false .tfplan'
