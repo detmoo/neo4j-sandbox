@@ -1,9 +1,7 @@
 steps:
   - task: TerraformTaskV4@4
-    displayName: 'Terraform Plan'
+    displayName: 'Terraform Destroy'
     inputs:
       provider: 'azurerm'
-      command: 'plan'
-      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+      command: 'destroy'
       environmentServiceNameAzureRM: "terraform-agent"
-      commandOptions: '-out=.tfplan -var="tcp_ports=[7474, 7687]" -var="image=neo4j"'
