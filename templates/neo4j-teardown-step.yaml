@@ -1,0 +1,9 @@
+steps:
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Plan'
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+      environmentServiceNameAzureRM: "terraform-agent"
+      commandOptions: '-out=.tfplan -var="tcp_ports=[7474, 7687]" -var="image=neo4j"'

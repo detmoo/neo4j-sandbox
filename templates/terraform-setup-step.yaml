@@ -1,0 +1,28 @@
+parameters:
+  - name: workingDirectory
+    default: $(Build.SourcesDirectory)
+
+steps:
+  - task: TerraformInstaller@1
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: 'latest'
+
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Init'
+    inputs:
+      command: 'init'
+      provider: 'azurerm'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+      ensureBackend: true
+      backendServiceArm: "terraform-agent"
+      backendAzureRmResourceGroupName: 'neo4j-sandbox'
+      backendAzureRmStorageAccountName: 'terraform987654321'
+      backendAzureRmContainerName: 'terraform-state-files'
+      backendAzureRmKey: 'state.tfstate'
+
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Validate'
+    inputs:
+      command: 'validate'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'

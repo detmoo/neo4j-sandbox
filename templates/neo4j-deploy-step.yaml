@@ -1,0 +1,26 @@
+parameters:
+  - name: workingDirectory
+    default: $(Build.SourcesDirectory)
+  - name: testSteps
+    type: stepList
+    default: []
+
+
+steps:
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Plan'
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+      environmentServiceNameAzureRM: "terraform-agent"
+      commandOptions: '-out=.tfplan -var="tcp_ports=[7474, 7687]" -var="image=neo4j"'
+
+  - task: TerraformTaskV4@4
+    displayName: 'Terraform Apply'
+    inputs:
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+      environmentServiceNameAzureRM: "terraform-agent"
+      commandOptions: '-auto-approve -input=false .tfplan'

@@ -1,5 +1,3 @@
-# Azure DevOps YAML Pipeline from Bow Data Toolkits
-
 trigger:
     branches:
         include:
@@ -7,6 +5,16 @@ trigger:
 
 
 parameters:
+  - name: deployEnvironments
+    type: object
+    default:
+      - name: "Test"
+        jobCondition: succeeded()
+        jobDependsOn: []
+        deployCondition: succeeded()
+        deployDependsOn: []
+        teardownCondition: succeeded()
+        teardownDependsOn: []
   - name: workingDirectory
     default: $(Build.SourcesDirectory)
   - name: preRelease
@@ -42,54 +50,30 @@ stages:
       ${{ each pair in parameters.azureTestStageVariables }}:
         ${{pair.key}}: ${{pair.value}}
     jobs:
-      - job: AzureContainerInstancesTestJob
-        pool: ${{parameters.azdoAgentPool}}
-        condition: succeeded()
-        displayName: "ACI Test Job"
-        dependsOn: []
-        variables: {}
-        steps:
-          - task: TerraformInstaller@1
-            displayName: 'Install Terraform'
-            inputs:
-              terraformVersion: 'latest'
 
-          - checkout: self
-            displayName: 'Checkout repository'
+      - ${{ each environment in parameters.deployEnvironments }}:
 
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Init'
-            inputs:
-              command: 'init'
-              provider: 'azurerm'
-              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
-              ensureBackend: true
-              backendServiceArm: "terraform-agent"
-              backendAzureRmResourceGroupName: 'neo4j-sandbox'
-              backendAzureRmStorageAccountName: 'terraform987654321'
-              backendAzureRmContainerName: 'terraform-state-files'
-              backendAzureRmKey: 'state.tfstate'
+        - job: Neo4J_${{environment.name}}
+          pool: ${{parameters.azdoAgentPool}}
+          condition: ${{environment.jobCondition}}
+          displayName: "Neo4J ${{environment.name}}"
+          dependsOn: ${{environment.jobDependsOn}}
+          steps:
+            - checkout: self
+              displayName: 'Checkout repository'
 
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Validate'
-            inputs:
-              command: 'validate'
-              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
+            - template: /templates/terraform-setup-step.yaml
 
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Plan'
-            inputs:
-              provider: 'azurerm'
-              command: 'plan'
-              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
-              environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-out=.tfplan -var="tcp_ports=[7474, 7687]" -var="image=neo4j"'
+#            - template: /templates/neo4j-deploy-step.yaml
+#              parameters:
+#                condition: ${{environment.deployCondition}}
+#                pool: ${{parameters.azdoAgentPool}}
+#                workingDirectory: ${{parameters.workingDirectory}}
+#                testSteps: []
 
-          - task: TerraformTaskV4@4
-            displayName: 'Terraform Apply'
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
-              environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-auto-approve -input=false .tfplan'
+            - template: /templates/neo4j-teardown-step.yaml
+              parameters:
+                condition: ${{environment.teardownCondition}}
+                pool: ${{parameters.azdoAgentPool}}
+                workingDirectory: ${{parameters.workingDirectory}}
+                testSteps: []
