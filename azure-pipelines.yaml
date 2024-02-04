@@ -62,10 +62,12 @@ stages:
             inputs:
               command: 'init'
               provider: 'azurerm'
-              workingDirectory: '${{parameters.workingDirectory}}'
-              backendType: 'local'
-              ensureBackend: false
+              ensureBackend: true
               backendServiceArm: "terraform-agent"
+              backendAzureRmResourceGroupName: 'neo4j-sandbox'
+              backendAzureRmStorageAccountName: 'terraform987654321'
+              backendAzureRmContainerName: 'terraform-state-files'
+              backendAzureRmKey: 'state.tfstate'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Validate'
