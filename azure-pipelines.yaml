@@ -64,12 +64,12 @@ stages:
 
             - template: /templates/terraform-setup-step.yaml
 
-#            - template: /templates/neo4j-deploy-step.yaml
-#              parameters:
-#                condition: ${{environment.deployCondition}}
-#                pool: ${{parameters.azdoAgentPool}}
-#                workingDirectory: ${{parameters.workingDirectory}}
-#                testSteps: []
+            - template: /templates/neo4j-deploy-step.yaml
+              parameters:
+                condition: ${{environment.deployCondition}}
+                pool: ${{parameters.azdoAgentPool}}
+                workingDirectory: ${{parameters.workingDirectory}}
+                testSteps: []
 
             - template: /templates/neo4j-teardown-step.yaml
               parameters:
