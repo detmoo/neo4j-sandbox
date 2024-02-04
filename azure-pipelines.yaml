@@ -6,14 +6,6 @@ trigger:
             - "*"
 
 
-resources:
-    repositories:
-        - repository: bowdata-toolkits
-          type: git
-          name: toolkits/bowdata.toolkits.modules-pipelines
-          ref: refs/heads/master
-
-
 parameters:
   - name: workingDirectory
     default: $(Build.SourcesDirectory)
@@ -42,10 +34,10 @@ stages:
     dependsOn: ${{parameters.azureTestStageDependsOn}}
     condition: ${{parameters.azureTestStageCondition}}
     variables:
-      ARM_SUBSCRIPTION_ID: "9e5bf0fa-86d6-48ac-97c8-345ce88e547b"  # subscription
-      ARM_TENANT_ID: "da115dc3-b744-40e7-8217-325e653802c6"  # spa tenant
-      ARM_CLIENT_ID: "9e5bf0fa-86d6-48ac-97c8-345ce88e547b"  # spa app ID
-      ARM_CLIENT_SECRET: "QhiKty_tXBxk0AVe5TvrIk2BUL39dksINf"  # spa passwd
+      ARM_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+      ARM_TENANT_ID: $(AZURE_TENANT_ID)
+      ARM_CLIENT_ID: $(SPA_APP_ID)
+      ARM_CLIENT_SECRET: $(SPA_PASSWORD)
       ${{ each pair in parameters.azureTestStageVariables }}:
         ${{pair.key}}: ${{pair.value}}
     jobs:
@@ -84,9 +76,9 @@ stages:
             displayName: 'Terraform Plan'
             inputs:
               command: 'plan'
-              workingDirectory: '$(Build.SourcesDirectory)/azure-container-instances'
+              workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-out=..$(Build.SourcesDirectory)/tfplan'
+              commandOptions: '-out=$(Build.SourcesDirectory)/tfplan'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Apply'
