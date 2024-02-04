@@ -83,7 +83,7 @@ stages:
               command: 'plan'
               workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-out=.tfplan'
+              commandOptions: '-out=.tfplan -var="port=[7474, 7687], image=hub.docker.com/_/neo4j"'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Apply'
@@ -92,4 +92,4 @@ stages:
               command: 'apply'
               workingDirectory: '${{parameters.workingDirectory}}/modules/azure-container-instances'
               environmentServiceNameAzureRM: "terraform-agent"
-              commandOptions: '-auto-approve -input=false -var="[7474, 7687]" .tfplan'
+              commandOptions: '-auto-approve -input=false .tfplan'
