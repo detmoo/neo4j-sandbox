@@ -49,7 +49,7 @@ stages:
         dependsOn: []
         variables: {}
         steps:
-          - task: TerraformTaskV4@0
+          - task: TerraformInstaller@1
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: 'latest'
