@@ -4,7 +4,8 @@ parameters:
   - name: testSteps
     type: stepList
     default: []
-
+  - name: deployCondition
+    default: succeeded()
 
 steps:
   - task: TerraformTaskV4@4
@@ -17,6 +18,7 @@ steps:
       commandOptions: '-out=.tfplan -var="tcp_ports=[7474, 7687]" -var="image=neo4j"'
 
   - task: TerraformTaskV4@4
+    condition: ${{parameters.deployCondition}}
     displayName: 'Terraform Apply'
     inputs:
       provider: 'azurerm'

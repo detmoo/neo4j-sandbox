@@ -1,5 +1,10 @@
+parameters:
+  - name: teardownCondition
+    default: succeeded()
+
 steps:
   - task: TerraformTaskV4@4
+    condition: ${{parameters.teardownCondition}}
     displayName: 'Terraform Destroy'
     inputs:
       provider: 'azurerm'

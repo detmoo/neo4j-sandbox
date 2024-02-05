@@ -66,14 +66,14 @@ stages:
 
             - template: /templates/neo4j-deploy-step.yaml
               parameters:
-                condition: ${{environment.deployCondition}}
+                deployCondition: ${{environment.deployCondition}}
                 pool: ${{parameters.azdoAgentPool}}
                 workingDirectory: ${{parameters.workingDirectory}}
                 testSteps: []
 
             - template: /templates/neo4j-teardown-step.yaml
               parameters:
-                condition: ${{environment.teardownCondition}}
+                teardownCondition: ${{environment.teardownCondition}}
                 pool: ${{parameters.azdoAgentPool}}
                 workingDirectory: ${{parameters.workingDirectory}}
                 testSteps: []
