@@ -1,4 +1,6 @@
 parameters:
+  - name: workingDirectory
+    default: $(Build.SourcesDirectory)
   - name: teardownCondition
     default: succeeded()
 

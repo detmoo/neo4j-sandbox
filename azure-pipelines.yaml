@@ -74,4 +74,3 @@ stages:
               parameters:
                 teardownCondition: ${{environment.teardownCondition}}
                 workingDirectory: ${{parameters.workingDirectory}}
-                testSteps: []
