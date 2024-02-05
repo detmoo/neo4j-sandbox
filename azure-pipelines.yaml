@@ -12,9 +12,12 @@ parameters:
         jobCondition: succeeded()
         jobDependsOn: []
         deployCondition: succeeded()
-        deployDependsOn: []
         teardownCondition: succeeded()
-        teardownDependsOn: []
+      - name: "Demo"
+        jobCondition: succeeded()
+        jobDependsOn: [Neo4J_Test]
+        deployCondition: succeeded()
+        teardownCondition: eq(1, 0)
   - name: workingDirectory
     default: $(Build.SourcesDirectory)
   - name: preRelease
